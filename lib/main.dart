@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(MyApp());
@@ -58,15 +59,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
+  String sessionId;
 
   // Define the focus node. To manage the lifecycle, create the FocusNode in
   // the initState method, and clean it up in the dispose method.
   FocusNode focusNode;
+  AuthGoogle authGoogle;
 
   @override
   void initState() {
     super.initState();
 
+    sessionId = Uuid().v4();
     focusNode = FocusNode();
   }
 
@@ -109,9 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void Response(query) async {
     _textController.clear();
-    AuthGoogle authGoogle =
-    await AuthGoogle(fileJson: "assets/credentials.json")
-        .build();
+    if (authGoogle == null || authGoogle.hasExpired) {
+      authGoogle =
+      await AuthGoogle(fileJson: "assets/credentials.json",
+          sessionId: sessionId).build();
+    }
     Dialogflow dialogflow =
     Dialogflow(authGoogle: authGoogle, language: Language.english);
     AIResponse response = await dialogflow.detectIntent(query);
