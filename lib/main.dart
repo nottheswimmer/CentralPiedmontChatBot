@@ -106,15 +106,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleSubmitted(String text) {
+    // Trim whitespace off the user submitted message
+    text = text.trim();
+
+    // If the user didn't write anything, ignore the event.
+    if (text.isEmpty) {
+      return;
+    }
+
+    // Clear the message box
     _textController.clear();
+
+    // Instantiate the user's message
     ChatMessage message = ChatMessage(
       text: text,
       name: "You",
       type: true,
     );
+
+    // Add the message to the list of messages
     setState(() {
       _messages.insert(0, message);
     });
+
+    // Trigger a response to the message
     Response(text);
   }
 
