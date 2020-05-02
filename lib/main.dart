@@ -59,6 +59,25 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
 
+  // Define the focus node. To manage the lifecycle, create the FocusNode in
+  // the initState method, and clean it up in the dispose method.
+  FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+
+    focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    focusNode.dispose();
+
+    super.dispose();
+  }
+
   Widget _buildTextComposer() {
     return IconTheme(
       data: IconThemeData(color: Theme.of(context).accentColor),
@@ -70,6 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 controller: _textController,
                 onSubmitted: _handleSubmitted,
+                focusNode: focusNode,
+                autofocus: true,
                 decoration:
                 InputDecoration.collapsed(hintText: "Send a message"),
               ),
@@ -106,6 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleSubmitted(String text) {
+    // On some platforms the chat field may not auto-refocus on submit
+    //   without this.
+    focusNode.requestFocus();
+
     // Trim whitespace off the user submitted message
     text = text.trim();
 
