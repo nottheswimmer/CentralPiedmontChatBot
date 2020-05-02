@@ -1,0 +1,8 @@
+body, fit-clip {
+    /* Override flutter making things unselectable */
+    user-select: unset  !important;
+}
+
+flt-canvas {
+    pointer-events: auto;
+}

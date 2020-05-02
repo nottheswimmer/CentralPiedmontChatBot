@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -191,11 +192,12 @@ class ChatMessage extends StatelessWidget {
               margin: const EdgeInsets.only(top: 5.0),
               child: Linkify(
                 onOpen: (link) async {
-                  if (await canLaunch(link.url)) {
-                    await launch(link.url);
-                  } else {
-                    throw 'Could not launch $link';
-                  }
+                  if (!kIsWeb)  // Do nothing if this is on the web
+                    if (await canLaunch(link.url)) {
+                      await launch(link.url);
+                    } else {
+                      throw 'Could not launch $link';
+                    }
                 },
                 text: text,
               )
